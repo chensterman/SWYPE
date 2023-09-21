@@ -15,7 +15,7 @@ MINIMUM_REWARDS_BALANCE = 25.0
 OPTIONS = webdriver.ChromeOptions()
 # OPTIONS.add_argument('log-level=3')
 CHROME_SERVICE = Service(ChromeDriverManager().install())
-CHROME = webdriver.Chrome(service=CHROME_SERVICE, options=OPTIONS)
+CHROME = webdriver.Chrome(service=Service(executable_path='./chromedriver'), options=OPTIONS)
 # Bypass bot detection
 CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
   "source": """
