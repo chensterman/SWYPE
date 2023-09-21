@@ -12,8 +12,14 @@ MINIMUM_REWARDS_BALANCE = 25.0
 
 # Chrome webdriver
 OPTIONS = webdriver.ChromeOptions()
+OPTIONS.add_argument('--no-sandbox')
+OPTIONS.add_argument('--headless')
+OPTIONS.add_argument('--ignore-certificate-errors')
+OPTIONS.add_argument('--disable-dev-shm-usage')
+OPTIONS.add_argument('--disable-extensions')
+OPTIONS.add_argument('--disable-gpu')
 # OPTIONS.add_argument('log-level=3')
-CHROME = webdriver.Chrome(service=Service(executable_path='./chromedriver'), options=OPTIONS)
+CHROME = webdriver.Chrome(options=OPTIONS)
 # Bypass bot detection
 CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
   "source": """
