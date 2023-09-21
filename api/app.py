@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL')
 app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
+DEBUG = os.environ.get('DEBUG')
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
@@ -40,4 +41,7 @@ def check_task_status(task_id):
     return jsonify(response)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if DEBUG == 'true':
+        app.run(debug=True)
+    else:
+        app.run(debug=False, host='0.0.0.0')
