@@ -3,7 +3,6 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 ######################################## GLOBAL VARIABLES
 
@@ -14,7 +13,6 @@ MINIMUM_REWARDS_BALANCE = 25.0
 # Chrome webdriver
 OPTIONS = webdriver.ChromeOptions()
 # OPTIONS.add_argument('log-level=3')
-CHROME_SERVICE = Service(ChromeDriverManager().install())
 CHROME = webdriver.Chrome(service=Service(executable_path='./chromedriver'), options=OPTIONS)
 # Bypass bot detection
 CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
