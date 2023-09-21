@@ -1,24 +1,21 @@
 ######################################## IMPORTS AND INIT
 
-import os
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from dotenv import load_dotenv
-load_dotenv()
+from webdriver_manager.chrome import ChromeDriverManager
 
 ######################################## GLOBAL VARIABLES
 
 # Citizens Bank authentication parameters
 LOGIN_URL = "https://www.accessmycardonline.com/"
-USER_LOGIN = os.getenv("CITIZENS_USER_ID")        # Insert Citizens User ID
-USER_PASSWORD = os.getenv("CITIZENS_PASSWORD")  # Insert password
 MINIMUM_REWARDS_BALANCE = 25.0
 
 # Chrome webdriver
 OPTIONS = webdriver.ChromeOptions()
 # OPTIONS.add_argument('log-level=3')
-CHROME = webdriver.Chrome(service=Service(executable_path=r'/usr/local/bin/chromedriver'), options=OPTIONS)
+CHROME_SERVICE = Service(ChromeDriverManager().install())
+CHROME = webdriver.Chrome(service=CHROME_SERVICE, options=OPTIONS)
 # Bypass bot detection
 CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
   "source": """
