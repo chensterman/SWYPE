@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from celery import Celery
+from citizens_swype import redeem_rewards
 
 app = Flask(__name__)
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
@@ -9,9 +10,11 @@ celery.conf.update(app.config)
 
 @celery.task(bind=True)
 def long_running_task(self):
-    # Simulate a long-running task (e.g., sleep for 30 seconds)
-    import time
-    time.sleep(30)
+    try:
+        redeem_rewards()
+    except Exception as e:
+        self.update_state(status='FAILED', meta={'error': str(e)})
+        raise e
     return f'Task completed'
 
 @app.route('/start_long_task', methods=['POST'])
@@ -27,7 +30,7 @@ def check_task_status(task_id):
     elif task.state == 'SUCCESS':
         response = {'status': 'Task completed', 'result': task.result}
     else:
-        response = {'status': 'Task failed'}
+        response = {'status': 'Task failed', 'error': str(task.info)}
     return jsonify(response)
 
 if __name__ == '__main__':

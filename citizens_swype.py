@@ -17,7 +17,7 @@ MINIMUM_REWARDS_BALANCE = 25.0
 
 # Chrome webdriver
 OPTIONS = webdriver.ChromeOptions()
-OPTIONS.add_argument('log-level=3')
+# OPTIONS.add_argument('log-level=3')
 CHROME = webdriver.Chrome(service=Service(executable_path=r'/usr/local/bin/chromedriver'), options=OPTIONS)
 # Bypass bot detection
 CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
@@ -67,13 +67,3 @@ def redeem_rewards():
   CHROME.find_elements("partial link text", "Redeem Now")[1].click()
   time.sleep(3.0)
   # TODO: IMPLEMENT AFTER $25.00 BALANCE
-
-######################################## MAIN
-
-if __name__ == "__main__":
-    redeem_rewards()
-
-    # Print exit message and quit
-    print("PROCESS COMPLETE.")
-    CHROME.close()
-    quit()
