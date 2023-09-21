@@ -31,14 +31,14 @@ CHROME.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
 ######################################## FUNCTIONS
 
 # Citizens Bank authentication
-def auth():
+def auth(username, password):
   # Navigate to login page
   CHROME.get(LOGIN_URL)
   # Delay to allow for rendering
   time.sleep(3.0)
   # Input credentials and login
-  CHROME.find_element("id", "username").send_keys(USER_LOGIN)
-  CHROME.find_element("id", "password").send_keys(USER_PASSWORD)
+  CHROME.find_element("id", "username").send_keys(username)
+  CHROME.find_element("id", "password").send_keys(password)
   CHROME.find_element("id", "loginButton").click()
   # Delay to allow for rendering
   time.sleep(3.0)
@@ -47,18 +47,18 @@ def auth():
       raise Exception("Login failed.")
     
 # Citizens Bank check rewards balance
-def get_rewards_balance():
+def get_rewards_balance(username, password):
   # Login to bank
-  auth()
+  auth(username, password)
   # Retrieve rewards balance information
   rewards_balance_str = CHROME.find_elements("xpath", "//div[@class='card-currency']")[1].text.strip()
   rewards_balance_float = float(rewards_balance_str[1:])
   return rewards_balance_float
     
 # Citizens Bank redeem rewards
-def redeem_rewards():
+def redeem_rewards(username, password):
   # Check sufficient rewards balance
-  rewards_balance = get_rewards_balance()
+  rewards_balance = get_rewards_balance(username, password)
   if (rewards_balance < MINIMUM_REWARDS_BALANCE):
      raise Exception("Rewards balance insufficient.")
   # Commence redemption process

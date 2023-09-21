@@ -1,17 +1,18 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from celery import Celery
 from citizens_swype import redeem_rewards
+import os
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
+app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 @celery.task(bind=True)
-def long_running_task(self):
+def long_running_task(self, username, password):
     try:
-        redeem_rewards()
+        redeem_rewards(username, password)
     except Exception as e:
         self.update_state(status='FAILED', meta={'error': str(e)})
         raise e
@@ -19,7 +20,12 @@ def long_running_task(self):
 
 @app.route('/start_long_task', methods=['POST'])
 def start_long_task():
-    task = long_running_task.apply_async()
+    # Access JSON POST data
+    data = request.get_json()
+    # Access specific POST parameters by key
+    username = data.get('username')
+    password = data.get('password')
+    task = long_running_task.apply_async(username, password)
     return jsonify({'task_id': task.id, 'status': 'Task started'}), 202
 
 @app.route('/check_task_status/<task_id>', methods=['GET'])
