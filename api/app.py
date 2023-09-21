@@ -25,7 +25,7 @@ def start_long_task():
     # Access specific POST parameters by key
     username = data.get('username')
     password = data.get('password')
-    task = long_running_task.apply_async(username, password)
+    task = long_running_task.apply_async(args=[username, password])
     return jsonify({'task_id': task.id, 'status': 'Task started'}), 202
 
 @app.route('/check_task_status/<task_id>', methods=['GET'])
