@@ -10,6 +10,7 @@ class Swype(ABC):
     # Chrome webdriver
     OPTIONS = webdriver.ChromeOptions()
     OPTIONS.add_argument('--no-sandbox')
+    OPTIONS.add_argument('--headless')
     OPTIONS.add_argument('--ignore-certificate-errors')
     OPTIONS.add_argument('--disable-dev-shm-usage')
     OPTIONS.add_argument('--disable-extensions')
