@@ -1,31 +1,42 @@
 from flask import Flask, jsonify, request
 from celery import Celery
-from citizens_swype import redeem_rewards
+from classes.swype_citizens import SwypeCitizens
+from classes.swype import Swype
 import os
 
 app = Flask(__name__)
-app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL')
-app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
+app.config['CELERY_BROKER_URL'] = os.environ.get("REDIS_URL")
+app.config['CELERY_RESULT_BACKEND'] = os.environ.get("REDIS_URL")
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 @celery.task(bind=True)
-def long_running_task(self, username, password):
-    try:
-        redeem_rewards(username, password)
-    except Exception as e:
-        self.update_state(status='FAILED', meta={'error': str(e)})
-        raise e
-    return f'Task completed'
+def long_running_task(self, bank, username, password, task_type):
+    if (bank == 'citizens'):
+        swype = SwypeCitizens("https://www.accessmycardonline.com/", 25.0, username, password)
+    else:
+        swype = Swype()
 
-@app.route('/start_long_task', methods=['POST'])
-def start_long_task():
+    if (task_type == 'check_balance'):
+        balance = swype.get_rewards_balance()
+        swype.close_browser()
+        return balance
+    else:
+        swype.redeem_rewards()
+        swype.close_browser()
+        return 'Redeem Success.'
+    
+
+@app.route('/start_task', methods=['POST'])
+def start_task():
     # Access JSON POST data
     data = request.get_json()
     # Access specific POST parameters by key
+    bank = data.get('bank')
     username = data.get('username')
     password = data.get('password')
-    task = long_running_task.apply_async(args=[username, password])
+    task_type = data.get('task_type')
+    task = long_running_task.apply_async(args=[bank, username, password, task_type])
     return jsonify({'task_id': task.id, 'status': 'Task started'}), 202
 
 @app.route('/check_task_status/<task_id>', methods=['GET'])
