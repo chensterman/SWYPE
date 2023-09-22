@@ -1,4 +1,7 @@
 import time
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from .swype import Swype
 
 class SwypeTD(Swype):
@@ -13,13 +16,15 @@ class SwypeTD(Swype):
         # Navigate to login page
         Swype.CHROME.get(self.login_url)
         # Delay to allow for rendering
-        time.sleep(3.0)
+        element = WebDriverWait(Swype.CHROME, 15).until(
+            EC.presence_of_element_located((By.ID, "psudoUsername"))
+        )
         # Input credentials and login
-        Swype.CHROME.find_element("id", "psudoUsername").send_keys(self.username)
+        element.send_keys(self.username)
         Swype.CHROME.find_element("id", "password").send_keys(self.password)
         Swype.CHROME.find_element("xpath", "//button[@type='submit']").click()
         # Delay to allow for rendering
-        time.sleep(10.0)
+        time.sleep(5.0)
         # Check for security code retrieval
         if(len(Swype.CHROME.find_elements("xpath", "//h1[@aria-label='Security Code Verification']")) != 0):
             # Text message for security code
@@ -37,8 +42,13 @@ class SwypeTD(Swype):
         # Login to bank
         self.auth()
         # Retrieve rewards balance information
+        WebDriverWait(Swype.CHROME, 15).until(
+            EC.presence_of_element_located((By.XPATH, "//span[@aria-label='TD Cash']"))
+        )
         Swype.CHROME.find_element("xpath", "//span[@aria-label='TD Cash']").click()
-        time.sleep(3.0)
+        WebDriverWait(Swype.CHROME, 15).until(
+            EC.presence_of_element_located((By.XPATH, "//a[@aria-label='Redeem rewards.']"))
+        )
         Swype.CHROME.find_element("xpath", "//a[@aria-label='Redeem rewards.']").click()
         time.sleep(10.0)
         window_after = Swype.CHROME.window_handles[1]
@@ -53,8 +63,13 @@ class SwypeTD(Swype):
         if (rewards_balance <self.minimum_rewards_balance):
             raise Exception("Rewards balance insufficient.")
         # Commence redemption process
+        WebDriverWait(Swype.CHROME, 15).until(
+            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "Redeem Again")) #This is a dummy element
+        )
         Swype.CHROME.find_element("partial link text", "Redeem Again").click()
-        time.sleep(3.0)
+        WebDriverWait(Swype.CHROME, 15).until(
+            EC.presence_of_element_located((By.XPATH, "//img[@alt='Jump to Statement Credit']")) #This is a dummy element
+        )
         Swype.CHROME.find_element("xpath", "//img[@alt='Jump to Statement Credit']").click()
         time.sleep(3.0)
         # TODO: IMPLEMENT AFTER $25.00 BALANCE
