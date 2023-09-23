@@ -1,0 +1,9 @@
+{
+    "name": "SWYPE Extension",
+    "version": "0.1.0",
+    "manifest_version": 3,
+    "description": "Cash back redemption prototype",
+    "action": {
+        "default_popup": "index.html"
+    }
+}
