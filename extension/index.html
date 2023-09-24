@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SWYPE Extension</title>
-    <script src="rewards.js"></script>
 </head>
 
 <body>
@@ -17,9 +16,14 @@
         <option value="citizens">Citizens Bank</option>
     </select>
     <input id="username" type="text" placeholder="Username"/>
-    <input id="password" type="text" placeholder="Password"/>
+    <input id="password" type="password" placeholder="Password"/>
     <button id="checkBalance">Get Rewards Balance</button>
     <div id="rewardsBalance"></div>
+    <br>
+    <input id="redeemBalance" type="number" placeholder="Amount (e.g. 11.27)"/>
+    <button id="redeem">Redeem Rewards</button>
+    <div id="redeemStatus"></div>
+    <script src="rewards.js"></script>
 </body>
 
 </html>
